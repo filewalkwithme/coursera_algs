@@ -3,27 +3,35 @@ import edu.princeton.cs.algs4.RectHV;
 
 
 public class KdTree {
+    private Node node;
+    private int size = 0;
+
     // construct an empty set of points
     public KdTree() {
     }
 
     // is the set empty?
     public boolean isEmpty() {
-        return false;
+        return node == null;
     }
 
     // number of points in the set
     public int size() {
-        return 0;
+        return size;
     }
 
     // add the point to the set (if it is not already in the set)
     public void insert(Point2D p) {
+        if (node == null) {
+            node = new Node(p);
+        } else {
+            node.insert(p);
+        }
     }
 
     // does the set contain point p?
     public boolean contains(Point2D p) {
-        return false;
+        return this.node.find(p) != null;
     }
 
     // draw all points to standard draw
@@ -51,6 +59,9 @@ public class KdTree {
         n.insert(new Point2D(3,1));
         n.insert(new Point2D(7,7));
         n.print();
+
+        System.out.printf("Contains 4,6? %b\n", n.find(new Point2D(4,6))!=null);
+        System.out.printf("Contains 8,8? %b\n", n.find(new Point2D(8,8))!=null);
     }
 }
 
@@ -121,4 +132,40 @@ class Node {
         }
     }
 
+
+    public Point2D find(Point2D point) {
+        if (point.x() == this.point.x() && point.y() == this.point.y()) {
+            return this.point;
+        } else {
+            if (level % 2 == 0) {
+                if (point.x() < this.point.x()) {
+                    if (this.left == null) {
+                        return null;
+                    } else {
+                        return this.left.find(point);
+                    }
+                } else {
+                    if (this.right == null) {
+                        return null;
+                    } else {
+                        return this.right.find(point);
+                    }
+                }
+            } else {
+                if (point.y() < this.point.y()) {
+                    if (this.left == null) {
+                        return null;
+                    } else {
+                        return this.left.find(point);
+                    }
+                } else {
+                    if (this.right == null) {
+                        return null;
+                    } else {
+                        return this.right.find(point);
+                    }
+                }
+            }
+        }
+    }
 }

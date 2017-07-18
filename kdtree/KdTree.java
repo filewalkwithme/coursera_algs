@@ -36,7 +36,9 @@ public class KdTree {
 
     // draw all points to standard draw
     public void draw() {
-
+        if (this.node != null) {
+            this.node.draw();
+        }
     }
 
     // all points that are inside the rectangle
@@ -58,7 +60,7 @@ public class KdTree {
         n.insert(new Point2D(3,3));
         n.insert(new Point2D(3,1));
         n.insert(new Point2D(7,7));
-        n.print();
+        n.draw();
 
         System.out.printf("Contains 4,6? %b\n", n.find(new Point2D(4,6))!=null);
         System.out.printf("Contains 8,8? %b\n", n.find(new Point2D(8,8))!=null);
@@ -79,6 +81,20 @@ class Node {
         return this.point;
     }
 
+
+    public void draw() {
+        if (this.point != null) {
+            this.point.draw();
+            
+            if (this.left != null) {
+                this.left.draw();
+            }
+
+            if (this.right != null) {
+                this.right.draw();
+            }
+        }
+    }
 
     public void print() {
         if (this.point != null) {

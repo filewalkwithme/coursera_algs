@@ -1,6 +1,6 @@
 import edu.princeton.cs.algs4.Point2D;
 import edu.princeton.cs.algs4.RectHV;
-
+import java.util.TreeSet;
 
 public class KdTree {
     private Node node;
@@ -43,12 +43,25 @@ public class KdTree {
 
     // all points that are inside the rectangle
     public Iterable<Point2D> range(RectHV rect) {
-        return null;
+
+        TreeSet<Point2D> result = new TreeSet<Point2D>();
+
+        if (this.node != null) {
+            this.node.range(rect, result);
+        }
+
+        return result;
     }
 
     // a nearest neighbor in the set to point p; null if the set is empty
     public Point2D nearest(Point2D p) {
-        return null;
+        Point2D nearestPoint = null;
+        boolean firstStep = true;
+        double smallerDistance = 0;
+
+        this.node.nearest(p, this.node.getPoint(), this.node.getPoint().distanceTo(p));
+
+        return nearestPoint;
     }
 
     // unit testing of the methods (optional)
@@ -85,7 +98,10 @@ class Node {
     public void draw() {
         if (this.point != null) {
             this.point.draw();
-            
+            //if (level % 2 == 0){
+                this.point.drawTo(new Point2D(0, this.point.y()));
+            //}
+
             if (this.left != null) {
                 this.left.draw();
             }
@@ -95,6 +111,51 @@ class Node {
             }
         }
     }
+
+    public void nearest(Point2D queryPoint, Point2D nearest, double nearestDistance) {
+        if (this.point != null && this.point.distanceTo(queryPoint) < nearestDistance) {
+            nearest = this.point;
+            nearestDistance = this.point.distanceTo(queryPoint);
+        }
+
+        if (level % 2 == 0) {
+            if (this.left != null && queryPoint.distanceTo(new Point2D(this.left.point.x(), queryPoint.y())) < nearestDistance) {
+                this.left.nearest(queryPoint, nearest, nearestDistance);
+            }
+            if (this.right != null && queryPoint.distanceTo(new Point2D(this.right.point.x(), queryPoint.y())) < nearestDistance) {
+                this.right.nearest(queryPoint, nearest, nearestDistance);
+            }
+        } else {
+            if (this.left != null && queryPoint.distanceTo(new Point2D(queryPoint.x(), this.left.point.y())) < nearestDistance) {
+                this.left.nearest(queryPoint, nearest, nearestDistance);
+            }
+            if (this.right != null && queryPoint.distanceTo(new Point2D(queryPoint.x(), this.right.point.y())) < nearestDistance) {
+                this.right.nearest(queryPoint, nearest, nearestDistance);
+            }
+        }
+    }
+
+    public void range(RectHV rect, TreeSet<Point2D> result) {
+        if (rect.contains(this.point)) {
+            result.add(this.point);
+            if (level % 2 == 0) {
+                if (this.left != null && rect.xmin() <= this.point.x() || rect.xmax() <= this.point.x()) {
+                    this.left.range(rect, result);
+                }
+                if (this.right != null && rect.xmin() >= this.point.x() || rect.xmax() >= this.point.x()) {
+                    this.right.range(rect, result);
+                }
+            } else {
+                if (this.left != null && rect.ymin() <= this.point.y() || rect.ymax() <= this.point.y()) {
+                    this.left.range(rect, result);
+                }
+                if (this.right != null && rect.ymin() >= this.point.y() || rect.ymax() >= this.point.y()) {
+                    this.right.range(rect, result);
+                }
+            }
+        }
+    }
+
 
     public void print() {
         if (this.point != null) {
